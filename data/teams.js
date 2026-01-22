@@ -376,4 +376,6 @@ window.DEFAULT_LEAGUES = [
       'Zambia',
       'Zanzíbar',
       'Zimbabue'
-    
+    ]
+  }
+];

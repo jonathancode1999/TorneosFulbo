@@ -14,3 +14,10 @@ Backup
 Notas
 - Todo se guarda en tu navegador (localStorage). Si abrís la app en otra PC o navegador, no se comparte.
 - Si tenés muchos participantes (ej 30) y elegiste pocas ligas, asegurate de que haya suficientes equipos para asignar.
+
+
+SERVER MODE (PHP):
+- Shared state endpoint: /api/state.php
+- Data file: /data/state.json
+- If endpoint is reachable, app syncs automatically for multi-user.
+- NOTE: Render filesystem can reset on redeploy; for persistence use DB (Postgres) later.

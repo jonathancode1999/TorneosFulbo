@@ -16,13 +16,18 @@
 <div class="subtitle">Liga / Copa (con historial)</div>
 </div>
 </div>
-<nav class="nav">
+<button class="nav-toggle" id="nav-toggle"><span class="nav-ico">☰</span> Menú</button><nav class="nav">
 <button class="navbtn" data-route="home">Inicio</button>
 <button class="navbtn" data-route="create">Crear torneo</button>
 <button class="navbtn" data-route="tournaments">Torneos / Historial</button>
 <button class="navbtn" data-route="teams">Equipos y ligas</button>
 </nav>
-</header>
+</header><div class="nav-backdrop hidden" id="nav-backdrop"></div><div class="nav-menu hidden" id="nav-menu"><div class="nav-menu-inner"><nav class="nav">
+<button class="navbtn" data-route="home">Inicio</button>
+<button class="navbtn" data-route="create">Crear torneo</button>
+<button class="navbtn" data-route="tournaments">Torneos / Historial</button>
+<button class="navbtn" data-route="teams">Equipos y ligas</button>
+</nav></div></div>
 <main class="container">
 <!-- HOME -->
 <section class="view" id="view-home">

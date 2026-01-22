@@ -8,10 +8,113 @@
   const LS_TOURNAMENTS = 'torneoapp.tournaments.v1';
   const LS_STATS = 'torneoapp.stats.v1';
 
-  // ---------- helpers ----------
+  
+  // ---------- server state (optional) ----------
+  // If /api/state.php exists, we use it as the shared source of truth (multi-user).
+  // Fallback: localStorage (offline / static hosting).
+  const API_STATE_URL = './api/state.php';
+
+  let SERVER = {
+    enabled: false,
+    version: null,
+    data: null,
+    lastSyncAt: null
+  };
+
+  async function serverLoadState(){
+    try{
+      const res = await fetch(API_STATE_URL, { cache: 'no-store' });
+      if (!res.ok) throw new Error('http ' + res.status);
+      const j = await res.json();
+      SERVER.enabled = true;
+      SERVER.version = j.version ?? null;
+      SERVER.data = j.data ?? null;
+      SERVER.lastSyncAt = Date.now();
+      return j;
+    }catch(e){
+      SERVER.enabled = false;
+      return null;
+    }
+  }
+
+  async function serverSaveState(data){
+    if (!SERVER.enabled) return null;
+    const payload = { expectedVersion: SERVER.version, data };
+    const res = await fetch(API_STATE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.status === 409){
+      const j = await res.json().catch(() => null);
+      throw { type: 'conflict', payload: j };
+    }
+    if (!res.ok) throw new Error('http ' + res.status);
+
+    const j = await res.json();
+    SERVER.version = j.version ?? SERVER.version;
+    SERVER.data = j.data ?? data;
+    SERVER.lastSyncAt = Date.now();
+    return j;
+  }
+
+  function buildStateFromLocal(){
+    return {
+      leagues: getLeaguesLocal(),
+      tournaments: getTournamentsLocal(),
+      stats: getStatsLocal()
+    };
+  }
+
+  function applyStateToLocal(state){
+    if (!state) return;
+    if (state.leagues) setLeaguesLocal(state.leagues);
+    if (state.tournaments) setTournamentsLocal(state.tournaments);
+    if (state.stats) setStatsLocal(state.stats);
+  }
+// ---------- helpers ----------
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => Array.from(document.querySelectorAll(sel));
   const uid = () => Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+
+  // ---------- mobile nav ----------
+  function setupMobileNav(){
+    const toggle = $('#nav-toggle');
+    const menu = $('#nav-menu');
+    const backdrop = $('#nav-backdrop');
+    if (!toggle || !menu || !backdrop) return;
+
+    const open = () => {
+      menu.classList.remove('hidden');
+      backdrop.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    };
+    const close = () => {
+      menu.classList.add('hidden');
+      backdrop.classList.add('hidden');
+      document.body.style.overflow = '';
+    };
+
+    toggle.onclick = () => {
+      const isHidden = menu.classList.contains('hidden');
+      if (isHidden) open(); else close();
+    };
+    backdrop.onclick = close;
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') close();
+    });
+
+    menu.addEventListener('click', (e) => {
+      const btn = e.target && e.target.closest ? e.target.closest('.navbtn') : null;
+      if (btn) close();
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 820) close();
+    });
+  }
+
   const clone = (o) => JSON.parse(JSON.stringify(o));
   const fmtDate = (iso) => {
     try { return new Date(iso).toLocaleString('es-AR'); } catch { return iso; }
@@ -32,7 +135,7 @@
     return a;
   }
 
-  function getLeagues(){
+  function getLeaguesLocal(){
     const raw = localStorage.getItem(LS_LEAGUES);
     if (raw) {
       try { return JSON.parse(raw); } catch { /* fallthrough */ }
@@ -43,29 +146,96 @@
     return seeded;
   }
 
-  function setLeagues(leagues){
+  function setLeaguesLocal(leagues){
     localStorage.setItem(LS_LEAGUES, JSON.stringify(leagues));
   }
 
-  function getTournaments(){
+  function getTournamentsLocal(){
     const raw = localStorage.getItem(LS_TOURNAMENTS);
     if (!raw) return [];
     try { return JSON.parse(raw); } catch { return []; }
   }
 
-  function setTournaments(list){
+  function setTournamentsLocal(list){
     localStorage.setItem(LS_TOURNAMENTS, JSON.stringify(list));
   }
 
-  function getStats(){
+  function getStatsLocal(){
     const raw = localStorage.getItem(LS_STATS);
     if (!raw) return {};
     try { return JSON.parse(raw); } catch { return {}; }
   }
 
-  function setStats(stats){
+  function setStatsLocal(stats){
     localStorage.setItem(LS_STATS, JSON.stringify(stats));
   }
+
+
+  // ---------- unified state accessors ----------
+  function getLeagues(){
+    if (SERVER.enabled && SERVER.data && Array.isArray(SERVER.data.leagues)) return SERVER.data.leagues;
+    return getLeaguesLocal();
+  }
+  function setLeagues(leagues){
+    if (SERVER.enabled){
+      if (!SERVER.data) SERVER.data = { leagues: [], tournaments: [], stats: { people: [] } };
+      SERVER.data.leagues = leagues;
+      // keep local mirror too
+      setLeaguesLocal(leagues);
+      // async save
+      scheduleServerSave();
+      return;
+    }
+    setLeaguesLocal(leagues);
+  }
+
+  function getTournaments(){
+    if (SERVER.enabled && SERVER.data && Array.isArray(SERVER.data.tournaments)) return SERVER.data.tournaments;
+    return getTournamentsLocal();
+  }
+  function setTournaments(tournaments){
+    if (SERVER.enabled){
+      if (!SERVER.data) SERVER.data = { leagues: [], tournaments: [], stats: { people: [] } };
+      SERVER.data.tournaments = tournaments;
+      setTournamentsLocal(tournaments);
+      scheduleServerSave();
+      return;
+    }
+    setTournamentsLocal(tournaments);
+  }
+
+  function getStats(){
+    if (SERVER.enabled && SERVER.data && SERVER.data.stats) return SERVER.data.stats;
+    return getStatsLocal();
+  }
+  function setStats(stats){
+    if (SERVER.enabled){
+      if (!SERVER.data) SERVER.data = { leagues: [], tournaments: [], stats: { people: [] } };
+      SERVER.data.stats = stats;
+      setStatsLocal(stats);
+      scheduleServerSave();
+      return;
+    }
+    setStatsLocal(stats);
+  }
+
+  let _saveTimer = null;
+  function scheduleServerSave(){
+    if (!SERVER.enabled) return;
+    if (_saveTimer) clearTimeout(_saveTimer);
+    _saveTimer = setTimeout(async () => {
+      try{
+        await serverSaveState(SERVER.data);
+      }catch(err){
+        if (err && err.type === 'conflict'){
+          alert('Otro usuario guardó cambios antes. Recargá la página para actualizar.');
+        } else {
+          // ignore transient failures (offline)
+        }
+      }
+    }, 350);
+  }
+
 
   function asArrayMaybe(x){
     return Array.isArray(x) ? x : [];
@@ -1777,6 +1947,14 @@
     $('#teams-reset').onclick = () => {
       if (!confirm('¿Restaurar el listado precargado de equipos? Se pierden tus cambios.')) return;
       localStorage.removeItem(LS_LEAGUES);
+      if (SERVER.enabled){
+        // reset to seeded leagues
+        const seeded = clone(window.DEFAULT_LEAGUES || []);
+        if (!SERVER.data) SERVER.data = { leagues: [], tournaments: [], stats: { people: [] } };
+        SERVER.data.leagues = seeded;
+        setLeaguesLocal(seeded);
+        scheduleServerSave();
+      }
       selectedLeagueId = null;
       renderTeams();
     };
@@ -1903,11 +2081,25 @@ $$('#league-teams button[data-del-team]').forEach(btn => {
   }
 
   // ---------- boot ----------
-  function boot(){
+  async function boot(){
+    setupMobileNav();
     // nav
     $$('.navbtn').forEach(btn => btn.onclick = () => show(btn.dataset.route));
     $('#goCreate').onclick = () => show('create');
     $('#goTournaments').onclick = () => show('tournaments');
+
+    // try server
+    const srv = await serverLoadState();
+    if (srv && srv.data){
+      // apply server state into local mirror for offline use
+      applyStateToLocal(srv.data);
+    } else if (srv && (srv.data === null || typeof srv.data === 'undefined')){
+      // first run on server: push local seeded state
+      const localState = buildStateFromLocal();
+      try{
+        await serverSaveState(localState);
+      }catch(e){}
+    }
 
     // initial
     show('home');
