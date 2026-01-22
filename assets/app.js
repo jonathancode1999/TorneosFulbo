@@ -1107,7 +1107,7 @@
 
     // backup export/import
 
-    $('#btn-reset-all').onclick$('#btn-reset-all').onclick = () => {
+    $('#btn-reset-all').onclick = () => {
       if (!confirm('Esto borra TODOS los torneos y el ranking guardado en este navegador. ¿Seguro?')) return;
       localStorage.removeItem(LS_TOURNAMENTS);
       localStorage.removeItem(LS_STATS);
