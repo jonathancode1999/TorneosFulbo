@@ -11,10 +11,10 @@ window.DEFAULT_LEAGUES = [
     region: 'LATAM',
     teams: [
       'Aldosivi','Argentinos Juniors','Atlético Tucumán','Barracas Central','Banfield','Belgrano',
-      'Boca Juniors','Central Córdoba (SdE)','Defensa y Justicia','Deportivo Riestra','Estudiantes (LP)','Gimnasia (LP)',
-      'Godoy Cruz','Huracán','Independiente','Independiente Rivadavia','Instituto','Lanús','Newell\'s Old Boys','Platense',
-      'Racing Club','River Plate','Rosario Central','San Lorenzo','San Martín (SJ)','Sarmiento (Junín)','Talleres (Córdoba)',
-      'Tigre','Unión (Santa Fe)','Vélez Sarsfield'
+      '★ Boca Juniors','Central Córdoba (SdE)','Defensa y Justicia','Deportivo Riestra','Estudiantes (LP)','Gimnasia (LP)',
+      'Godoy Cruz','Huracán','★ Independiente','Independiente Rivadavia','Instituto','Lanús','Newell\'s Old Boys','Platense',
+      '★ Racing Club','★ River Plate','★ Rosario Central','★ San Lorenzo','San Martín (SJ)','Sarmiento (Junín)','Talleres (Córdoba)',
+      'Tigre','Unión (Santa Fe)','★ Vélez Sarsfield'
     ]
   },
   {
@@ -22,8 +22,8 @@ window.DEFAULT_LEAGUES = [
     name: 'Brasil (Série A)',
     region: 'LATAM',
     teams: [
-      'Atlético Mineiro','Bahia','Botafogo','Ceará','Corinthians','Cruzeiro','Flamengo','Fluminense','Fortaleza','Grêmio',
-      'Internacional','Juventude','Mirassol','Palmeiras','Red Bull Bragantino','Santos','São Paulo','Sport','Vasco da Gama','Vitória'
+      '★ Atlético Mineiro','Bahia','★ Botafogo','Ceará','★ Corinthians','Cruzeiro','★ Flamengo','★ Fluminense','Fortaleza','★ Grêmio',
+      '★ Internacional','Juventude','Mirassol','★ Palmeiras','Red Bull Bragantino','★ Santos','★ São Paulo','Sport','Vasco da Gama','Vitória'
     ]
   },
   {
@@ -31,7 +31,7 @@ window.DEFAULT_LEAGUES = [
     name: 'Uruguay (Primera División)',
     region: 'LATAM',
     teams: [
-      'Nacional','Peñarol','Defensor Sporting','Liverpool','Danubio','Montevideo Wanderers','Racing','Boston River',
+      '★ Nacional','★ Peñarol','Defensor Sporting','★ Liverpool','Danubio','Montevideo Wanderers','Racing','Boston River',
       'Cerro Largo','Cerro','Montevideo City Torque','Progreso','River Plate (URU)','Miramar Misiones','Plaza Colonia','Juventud'
     ]
   },
@@ -40,8 +40,8 @@ window.DEFAULT_LEAGUES = [
     name: 'Chile (Primera División)',
     region: 'LATAM',
     teams: [
-      'Audax Italiano','Cobresal','Colo-Colo','Coquimbo Unido','Deportes Iquique','Deportes La Serena','Deportes Limache','Everton',
-      'Huachipato','Ñublense','O\'Higgins','Palestino','Unión Española','Unión La Calera','Universidad Católica','Universidad de Chile'
+      'Audax Italiano','Cobresal','★ Colo-Colo','Coquimbo Unido','Deportes Iquique','Deportes La Serena','Deportes Limache','Everton',
+      'Huachipato','Ñublense','O\'Higgins','Palestino','Unión Española','Unión La Calera','★ Universidad Católica','★ Universidad de Chile'
     ]
   },
   {
@@ -49,8 +49,8 @@ window.DEFAULT_LEAGUES = [
     name: 'Perú (Liga 1)',
     region: 'LATAM',
     teams: [
-      'ADT','Alianza Atlético','Alianza Lima','Alianza Universidad','Atlético Grau','Ayacucho','Binacional','Cienciano','Comerciantes Unidos',
-      'Cusco','Deportivo Garcilaso','Juan Pablo II College','Los Chankas','Melgar','Sport Boys','Sport Huancayo','Sporting Cristal','UTC','Universitario'
+      'ADT','Alianza Atlético','★ Alianza Lima','Alianza Universidad','Atlético Grau','Ayacucho','Binacional','Cienciano','Comerciantes Unidos',
+      'Cusco','Deportivo Garcilaso','Juan Pablo II College','Los Chankas','Melgar','Sport Boys','Sport Huancayo','★ Sporting Cristal','UTC','★ Universitario'
     ]
   },
   {
@@ -58,8 +58,8 @@ window.DEFAULT_LEAGUES = [
     name: 'Colombia (Categoría Primera A)',
     region: 'LATAM',
     teams: [
-      'Atlético Nacional','Millonarios','América de Cali','Independiente Medellín','Junior','Independiente Santa Fe','Deportes Tolima','Once Caldas',
-      'Deportivo Cali','La Equidad','Águilas Doradas','Atlético Bucaramanga','Boyacá Chicó','Alianza FC','Deportivo Pasto','Envigado',
+      '★ Atlético Nacional','★ Millonarios','★ América de Cali','Independiente Medellín','★ Junior','Independiente Santa Fe','Deportes Tolima','Once Caldas',
+      '★ Deportivo Cali','La Equidad','Águilas Doradas','Atlético Bucaramanga','Boyacá Chicó','Alianza FC','Deportivo Pasto','Envigado',
       'Fortaleza CEIF','Jaguares de Córdoba','Unión Magdalena','Patriotas Boyacá'
     ]
   },
@@ -68,8 +68,8 @@ window.DEFAULT_LEAGUES = [
     name: 'Ecuador (Serie A)',
     region: 'LATAM',
     teams: [
-      'Aucas','Barcelona','Delfín','Deportivo Cuenca','El Nacional','Emelec','Independiente del Valle','LDU Quito','Libertad','Macará','Manta',
-      'Mushuc Runa','Orense','Técnico Universitario','Universidad Católica','Vinotinto Ecuador'
+      'Aucas','★ Barcelona','Delfín','Deportivo Cuenca','El Nacional','★ Emelec','★ Independiente del Valle','★ LDU Quito','Libertad','Macará','Manta',
+      'Mushuc Runa','Orense','Técnico Universitario','★ Universidad Católica','Vinotinto Ecuador'
     ]
   },
   {
@@ -77,8 +77,8 @@ window.DEFAULT_LEAGUES = [
     name: 'México (Liga MX)',
     region: 'LATAM',
     teams: [
-      'América','Atlas','Atlético San Luis','Cruz Azul','Guadalajara (Chivas)','FC Juárez','León','Mazatlán','Monterrey','Necaxa','Pachuca','Puebla',
-      'Pumas UNAM','Querétaro','Santos Laguna','Tigres UANL','Tijuana','Toluca'
+      'América','Atlas','Atlético San Luis','★ Cruz Azul','Guadalajara (Chivas)','FC Juárez','León','Mazatlán','★ Monterrey','Necaxa','Pachuca','Puebla',
+      '★ Pumas UNAM','Querétaro','Santos Laguna','★ Tigres UANL','Tijuana','★ Toluca'
     ]
   },
 
@@ -88,8 +88,8 @@ window.DEFAULT_LEAGUES = [
     name: 'España (La Liga)',
     region: 'EUROPA',
     teams: [
-      'Athletic Club','Atlético de Madrid','Osasuna','Celta de Vigo','Deportivo Alavés','Elche','Barcelona','Getafe','Girona','Mallorca',
-      'Rayo Vallecano','Real Betis','Real Madrid','Real Sociedad','Sevilla','Valencia','Villarreal','Levante','Espanyol','Real Oviedo'
+      'Athletic Club','Atlético de Madrid','Osasuna','Celta de Vigo','Deportivo Alavés','Elche','★ Barcelona','Getafe','Girona','Mallorca',
+      'Rayo Vallecano','Real Betis','★ Real Madrid','★ Real Sociedad','★ Sevilla','★ Valencia','★ Villarreal','Levante','Espanyol','Real Oviedo'
     ]
   },
   {
@@ -97,8 +97,8 @@ window.DEFAULT_LEAGUES = [
     name: 'Italia (Serie A)',
     region: 'EUROPA',
     teams: [
-      'Atalanta','Bologna','Cagliari','Como','Empoli','Fiorentina','Genoa','Inter','Juventus','Lazio','Lecce','Milan','Monza','Napoli',
-      'Parma','Roma','Torino','Udinese','Venezia','Verona'
+      '★ Atalanta','Bologna','Cagliari','Como','Empoli','Fiorentina','Genoa','★ Inter','★ Juventus','★ Lazio','Lecce','★ Milan','Monza','★ Napoli',
+      'Parma','★ Roma','Torino','Udinese','Venezia','Verona'
     ]
   },
   {
@@ -106,8 +106,8 @@ window.DEFAULT_LEAGUES = [
     name: 'Inglaterra (Premier League)',
     region: 'EUROPA',
     teams: [
-      'Arsenal','Aston Villa','Bournemouth','Brentford','Brighton','Burnley','Chelsea','Crystal Palace','Everton','Fulham',
-      'Leeds United','Liverpool','Manchester City','Manchester United','Newcastle United','Nottingham Forest','Sunderland','Tottenham Hotspur','West Ham United','Wolverhampton Wanderers'
+      '★ Arsenal','Aston Villa','Bournemouth','Brentford','Brighton','Burnley','★ Chelsea','Crystal Palace','Everton','Fulham',
+      'Leeds United','★ Liverpool','★ Manchester City','★ Manchester United','Newcastle United','Nottingham Forest','Sunderland','Tottenham Hotspur','West Ham United','Wolverhampton Wanderers'
     ]
   },
   {
@@ -115,7 +115,7 @@ window.DEFAULT_LEAGUES = [
     name: 'Alemania (Bundesliga)',
     region: 'EUROPA',
     teams: [
-      'Bayern Munich','Borussia Dortmund','Bayer Leverkusen','RB Leipzig','Eintracht Frankfurt','SC Freiburg','VfB Stuttgart','VfL Wolfsburg',
+      '★ Bayern Munich','★ Borussia Dortmund','★ Bayer Leverkusen','★ RB Leipzig','Eintracht Frankfurt','SC Freiburg','VfB Stuttgart','VfL Wolfsburg',
       'Borussia Mönchengladbach','Union Berlin','Werder Bremen','FC Augsburg','TSG Hoffenheim','Mainz 05','Heidenheim','Hamburger SV','1. FC Köln','St. Pauli'
     ]
   },
@@ -124,7 +124,7 @@ window.DEFAULT_LEAGUES = [
     name: 'Francia (Ligue 1)',
     region: 'EUROPA',
     teams: [
-      'Paris Saint-Germain','Marseille','Lyon','Monaco','Lille','Nice','Rennes','Lens','Strasbourg','Nantes','Toulouse','Montpellier','Brest',
+      '★ Paris Saint-Germain','★ Marseille','★ Lyon','★ Monaco','★ Lille','Nice','Rennes','Lens','Strasbourg','Nantes','Toulouse','Montpellier','Brest',
       'Reims','Angers','Lorient','Metz','Auxerre'
     ]
   },
@@ -133,8 +133,247 @@ window.DEFAULT_LEAGUES = [
     name: 'Portugal (Primeira Liga)',
     region: 'EUROPA',
     teams: [
-      'Benfica','Porto','Sporting CP','Braga','Vitória de Guimarães','Gil Vicente','Famalicão','Boavista','Estoril','Arouca','Rio Ave','Casa Pia',
-      'Moreirense','Farense','Nacional','Tondela','AVS','Santa Clara'
+      '★ Benfica','★ Porto','★ Sporting CP','★ Braga','Vitória de Guimarães','Gil Vicente','Famalicão','Boavista','Estoril','Arouca','Rio Ave','Casa Pia',
+      'Moreirense','Farense','★ Nacional','Tondela','AVS','Santa Clara'
     ]
-  }
-];
+  },
+  {
+    id: 'national',
+    name: 'Selecciones (Mundo)',
+    region: 'SELECCIONES',
+    teams: [
+      '★ Argentina',
+      '★ Brasil',
+      '★ Francia',
+      '★ España',
+      '★ Inglaterra',
+      '★ Alemania',
+      '★ Italia',
+      '★ Portugal',
+      '★ Países Bajos',
+      '★ Bélgica',
+      '★ Uruguay',
+      '★ Croacia',
+      '★ Colombia',
+      '★ México',
+      '★ Estados Unidos',
+      '★ Marruecos',
+      '★ Senegal',
+      '★ Japón',
+      '★ Corea del Sur',
+      '★ Suiza',
+      '★ Dinamarca',
+      '★ Suecia',
+      '★ Serbia',
+      '★ Polonia',
+      '★ Ucrania',
+      '★ Chile',
+      '★ Perú',
+      '★ Ecuador',
+      '★ Camerún',
+      '★ Nigeria',
+      '★ Ghana',
+      '★ Costa de Marfil',
+      '★ Túnez',
+      '★ Argelia',
+      '★ Egipto',
+      '★ Australia',
+      '★ Irán',
+      '★ Arabia Saudita',
+      '★ Qatar',
+      '★ Canadá',
+      'Afganistán',
+      'Albania',
+      'Andorra',
+      'Angola',
+      'Anguila',
+      'Antigua y Barbuda',
+      'Armenia',
+      'Aruba',
+      'Austria',
+      'Azerbaiyán',
+      'Bahamas',
+      'Bahréin',
+      'Bangladés',
+      'Barbados',
+      'Baréin',
+      'Belice',
+      'Benín',
+      'Bermudas',
+      'Bielorrusia',
+      'Bolivia',
+      'Bonaire',
+      'Bosnia y Herzegovina',
+      'Botsuana',
+      'Brunéi',
+      'Bulgaria',
+      'Burkina Faso',
+      'Burundi',
+      'Bután',
+      'Cabo Verde',
+      'Camboya',
+      'Catar',
+      'Chad',
+      'China',
+      'Chipre',
+      'Comoras',
+      'Congo',
+      'Costa Rica',
+      'Cuba',
+      'Curazao',
+      'Dominica',
+      'El Salvador',
+      'Emiratos Árabes Unidos',
+      'Eritrea',
+      'Escocia',
+      'Eslovaquia',
+      'Eslovenia',
+      'Estonia',
+      'Esuatini',
+      'Etiopía',
+      'Filipinas',
+      'Finlandia',
+      'Fiyi',
+      'Gabón',
+      'Gales',
+      'Gambia',
+      'Georgia',
+      'Gibraltar',
+      'Granada',
+      'Guadalupe',
+      'Guam',
+      'Guatemala',
+      'Guernsey',
+      'Guinea',
+      'Guinea Ecuatorial',
+      'Guinea-Bisáu',
+      'Guyana',
+      'Guyana Francesa',
+      'Haití',
+      'Honduras',
+      'Hong Kong',
+      'Hungría',
+      'India',
+      'Indonesia',
+      'Irak',
+      'Irlanda',
+      'Irlanda del Norte',
+      'Isla de Man',
+      'Islandia',
+      'Islas Caimán',
+      'Islas Cook',
+      'Islas Feroe',
+      'Islas Fiji',
+      'Islas Marianas del Norte',
+      'Islas Marshall',
+      'Islas Salomón',
+      'Islas Turcas y Caicos',
+      'Islas Vírgenes Británicas',
+      'Islas Vírgenes de EE. UU.',
+      'Islas Åland',
+      'Israel',
+      'Jamaica',
+      'Jersey',
+      'Jordania',
+      'Kazajistán',
+      'Kenia',
+      'Kirguistán',
+      'Kiribati',
+      'Kosovo',
+      'Kuwait',
+      'Laos',
+      'Lesoto',
+      'Letonia',
+      'Liberia',
+      'Libia',
+      'Liechtenstein',
+      'Lituania',
+      'Luxemburgo',
+      'Líbano',
+      'Macao',
+      'Macedonia del Norte',
+      'Madagascar',
+      'Malasia',
+      'Malaui',
+      'Maldivas',
+      'Malta',
+      'Malí',
+      'Martinica',
+      'Mauricio',
+      'Mauritania',
+      'Micronesia',
+      'Moldavia',
+      'Mongolia',
+      'Montenegro',
+      'Montserrat',
+      'Mozambique',
+      'Myanmar',
+      'Mónaco',
+      'Namibia',
+      'Nepal',
+      'Nicaragua',
+      'Noruega',
+      'Nueva Caledonia',
+      'Nueva Zelanda',
+      'Níger',
+      'Omán',
+      'Pakistán',
+      'Palestina',
+      'Panamá',
+      'Papúa Nueva Guinea',
+      'Paraguay',
+      'Puerto Rico',
+      'República Centroafricana',
+      'República Checa',
+      'República Democrática del Congo',
+      'República Dominicana',
+      'Reunión',
+      'Ruanda',
+      'Rumania',
+      'Rusia',
+      'Saba',
+      'Saint Pierre y Miquelon',
+      'Samoa',
+      'Samoa Americana',
+      'San Bartolomé',
+      'San Cristóbal y Nieves',
+      'San Eustaquio',
+      'San Marino',
+      'San Martín',
+      'San Vicente y las Granadinas',
+      'Santa Lucía',
+      'Santo Tomé y Príncipe',
+      'Seychelles',
+      'Sierra Leona',
+      'Sint Maarten',
+      'Siria',
+      'Somalia',
+      'Sri Lanka',
+      'Sudáfrica',
+      'Sudán',
+      'Sudán del Sur',
+      'Sáhara Occidental',
+      'Tahiti',
+      'Tailandia',
+      'Taipéi Chino',
+      'Tanzania',
+      'Tayikistán',
+      'Timor Oriental',
+      'Timor-Leste',
+      'Togo',
+      'Tonga',
+      'Trinidad y Tobago',
+      'Turkmenistán',
+      'Turquía',
+      'Tuvalu',
+      'Uganda',
+      'Uzbekistán',
+      'Vanuatu',
+      'Venezuela',
+      'Vietnam',
+      'Yemen',
+      'Yibuti',
+      'Zambia',
+      'Zanzíbar',
+      'Zimbabue'
+    

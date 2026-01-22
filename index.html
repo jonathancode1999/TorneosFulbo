@@ -92,7 +92,30 @@
 <span>Marcar / desmarcar todas</span>
 </label>
 </div>
-<div class="leagues" id="ct-leagues"></div>
+<div class="grid-2" style="gap:10px">
+<div>
+<div class="muted" style="font-weight:800;margin-bottom:6px">LATAM</div>
+<div class="list" id="ct-leagues-latam"></div>
+</div>
+<div>
+<div class="muted" style="font-weight:800;margin-bottom:6px">Europa</div>
+<div class="list" id="ct-leagues-eu"></div>
+</div>
+</div>
+<div class="form-row" style="margin-top:10px">
+<label class="row" style="align-items:center;gap:10px;justify-content:flex-start">
+<input id="ct-only-national" type="checkbox"/>
+<span>Jugar solo con selecciones</span>
+</label>
+<div class="muted">Si activás esto, el sorteo usa solo la liga “Selecciones (Mundo)”.</div>
+</div>
+<div class="form-row" style="margin-top:8px">
+<label class="row" style="align-items:center;gap:10px;justify-content:flex-start">
+<input id="ct-only-competitive" type="checkbox"/>
+<span>Solo equipos competitivos</span>
+</label>
+<div class="muted">Cuenta como competitivo si el equipo empieza con “★”.</div>
+</div>
 <div class="muted">Marcá una o varias ligas. El sorteo asigna equipos sin repetir.</div>
 </div>
 </div>
@@ -110,9 +133,6 @@
 <div class="row between">
 <h2 style="margin:0">Torneos / Historial</h2>
 <div class="row gap">
-<button class="secondary" id="btn-export">Exportar backup (JSON)</button>
-<button class="secondary" id="btn-import">Importar backup</button>
-<input accept="application/json" class="hidden" id="importFile" type="file"/>
 <button class="danger" id="btn-reset-all">Borrar todo</button>
 </div>
 </div>
@@ -139,6 +159,13 @@
 <div class="card soft">
 <h3>Ligas</h3>
 <div class="list" id="league-list"></div>
+<div class="hr"></div>
+<div class="form-row">
+<label>Crear liga personalizada</label>
+<input id="league-add-name" placeholder="Ej: Mi Liga 5 vs 5" type="text"/>
+<button class="primary" id="league-add-btn" style="margin-top:10px">Crear liga</button>
+<div class="muted">Después podés agregar equipos en la liga creada. Tip: si un equipo empieza con "★" cuenta como competitivo.</div>
+</div>
 </div>
 <div class="card soft">
 <h3 id="league-title">Seleccioná una liga</h3>
@@ -148,8 +175,11 @@
 </section>
 </main>
 <footer class="footer">
-    Hecho para cargar resultados partido a partido. Guardado local (navegador).
-  </footer>
+<div class="footer-lyj">
+<span>Hecho por </span>
+<a href="https://lyjportfolio.onrender.com" rel="noopener" target="_blank">LyJ Desarrollos</a>
+</div>
+</footer>
 <script src="data/teams.js"></script>
 <script src="assets/app.js"></script>
 </body>

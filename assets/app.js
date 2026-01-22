@@ -94,6 +94,10 @@
     // cup groups options
     groupAdvance: 2, // how many advance per group
 
+    // filters
+    onlyCompetitive: false,
+    onlyNational: false, // only Selecciones (Mundo)
+
     // committed
     assignments: null,      // participants with teams
     tournamentDraft: null,  // full tournament object ready to save
@@ -112,6 +116,9 @@
     CT.leagueIds = new Set(); // all deselected by default
 
     CT.groupAdvance = 2;
+
+    CT.onlyCompetitive = false;
+    CT.onlyNational = false;
 
     CT.assignments = null;
     CT.tournamentDraft = null;
@@ -159,47 +166,92 @@
     }
 
     // league checkboxes
-    const lwrap = $('#ct-leagues');
-    if (CT.leagueIds.size === 0) {
-      // default: all deselected
-    }
-    lwrap.innerHTML = '';
-    leagues.forEach(l => {
-      const box = document.createElement('label');
-      box.className = 'check';
-      const checked = CT.leagueIds.has(l.id);
-      box.innerHTML = `
-        <input type="checkbox" ${checked ? 'checked' : ''} data-league="${l.id}">
-        <span>${escapeHtml(l.name)} <span class="muted">(${l.teams.length} equipos)</span></span>
-      `;
-      lwrap.appendChild(box);
-    });
-    
-    // toggle-all checkbox
-    const tgl = $('#ct-leagues-toggleall');
-    const total = leagues.length;
-    const selectedCount = CT.leagueIds.size;
-    tgl.indeterminate = selectedCount > 0 && selectedCount < total;
-    tgl.checked = total > 0 && selectedCount === total;
-    tgl.onchange = () => {
-      if (tgl.checked) leagues.forEach(l => CT.leagueIds.add(l.id));
-      else CT.leagueIds.clear();
-      CT.assignments = null;
-      CT.tournamentDraft = null;
-      renderCreate();
+    const lat = $('#ct-leagues-latam');
+    const eu = $('#ct-leagues-eu');
+    const toggleAll = $('#ct-leagues-toggleall');
+
+    // inputs
+    $('#ct-only-national').checked = CT.onlyNational;
+    $('#ct-only-competitive').checked = CT.onlyCompetitive;
+
+    const renderLeagueList = (container, items) => {
+      container.innerHTML = '';
+      items.forEach(l => {
+        const box = document.createElement('label');
+        box.className = 'check';
+        const checked = CT.leagueIds.has(l.id);
+        box.innerHTML = `
+          <input type="checkbox" ${checked ? 'checked' : ''} data-league="${l.id}">
+          <span>${escapeHtml(l.name)}</span>
+        `;
+        container.appendChild(box);
+      });
+      container.querySelectorAll('input[data-league]').forEach(chk => {
+        chk.onchange = () => {
+          const id = chk.getAttribute('data-league');
+          if (chk.checked) CT.leagueIds.add(id);
+          else CT.leagueIds.delete(id);
+
+          CT.assignments = null;
+          CT.tournamentDraft = null;
+          renderCreate();
+        };
+      });
     };
 
-lwrap.querySelectorAll('input[data-league]').forEach(chk => {
-      chk.onchange = () => {
-        if (chk.checked) CT.leagueIds.add(chk.dataset.league);
-        else CT.leagueIds.delete(chk.dataset.league);
+    const euIds = new Set(['es','it','en','de','fr','pt']);
+    const latIds = new Set(['ar','br','uy','cl','pe','co','ec','mx']);
+
+    const leaguesLatam = leagues.filter(l => latIds.has(l.id));
+    const leaguesEu = leagues.filter(l => euIds.has(l.id));
+
+    // If only national teams, disable leagues selection UI
+    lat.classList.toggle('hidden', CT.onlyNational);
+    eu.classList.toggle('hidden', CT.onlyNational);
+    toggleAll.closest('.form-row').classList.toggle('hidden', CT.onlyNational);
+
+    if (!CT.onlyNational){
+      renderLeagueList(lat, leaguesLatam);
+      renderLeagueList(eu, leaguesEu);
+
+      // toggle-all
+      const total = leaguesLatam.length + leaguesEu.length;
+      const selectedCount = Array.from(CT.leagueIds).filter(id => latIds.has(id) || euIds.has(id)).length;
+      toggleAll.indeterminate = selectedCount > 0 && selectedCount < total;
+      toggleAll.checked = total > 0 && selectedCount === total;
+      toggleAll.onchange = () => {
+        if (toggleAll.checked){
+          leaguesLatam.forEach(l => CT.leagueIds.add(l.id));
+          leaguesEu.forEach(l => CT.leagueIds.add(l.id));
+        } else {
+          // remove only these
+          Array.from(CT.leagueIds).forEach(id => {
+            if (latIds.has(id) || euIds.has(id)) CT.leagueIds.delete(id);
+          });
+        }
         CT.assignments = null;
         CT.tournamentDraft = null;
         renderCreate();
       };
-    });
+    } else {
+      // if only national, clear selected leagues
+      CT.leagueIds.clear();
+    }
 
-    // output
+    // filters
+    $('#ct-only-competitive').onchange = (e) => {
+      CT.onlyCompetitive = !!e.target.checked;
+      CT.assignments = null;
+      CT.tournamentDraft = null;
+      renderCreate();
+    };
+    $('#ct-only-national').onchange = (e) => {
+      CT.onlyNational = !!e.target.checked;
+      CT.assignments = null;
+      CT.tournamentDraft = null;
+      renderCreate();
+    };
+// output
     const out = $('#ct-output');
     out.classList.toggle('hidden', !(CT.assignments || CT.tournamentDraft || CT.pendingAssignments || CT.pendingDraft));
     if (CT.pendingDraft) {
@@ -309,34 +361,61 @@ lwrap.querySelectorAll('input[data-league]').forEach(chk => {
 
   function drawTeams(participants, selectedLeagueIds, leagues){
     if (!participants || participants.length < 2) throw new Error('Agregá al menos 2 participantes.');
-    const selected = leagues.filter(l => selectedLeagueIds.includes(l.id));
-    if (selected.length === 0) throw new Error('Seleccioná al menos 1 liga para el sorteo.');
 
-    const pool = [];
-    selected.forEach(l => l.teams.forEach(t => pool.push({ leagueId: l.id, leagueName: l.name, teamName: t })));
+    // Use the same pool logic as the UI (filters included)
+    const pool = buildTeamPool(selectedLeagueIds, leagues); // {leagueId,leagueName,teamName}
+    if (pool.length < participants.length) throw new Error('No hay suficientes equipos para no repetir. Seleccioná más ligas o desactivá filtros.');
 
-    if (pool.length < participants.length) {
-      throw new Error(`No hay suficientes equipos para asignar sin repetir. Necesitás ${participants.length} y hay ${pool.length}.`);
+    const used = new Set();
+    const poolCopy = pool.slice();
+
+    // shuffle pool copy
+    for (let i = poolCopy.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [poolCopy[i], poolCopy[j]] = [poolCopy[j], poolCopy[i]];
     }
 
-    const poolShuffled = shuffle(pool);
-    const picked = poolShuffled.slice(0, participants.length);
-
-    return participants.map((p, i) => ({
-      id: p.id,
-      name: p.name,
-      teamLeagueId: picked[i].leagueId,
-      leagueName: picked[i].leagueName,
-      teamName: picked[i].teamName
-    }));
+    return participants.map(p => {
+      // pick next unused
+      let pick = null;
+      while (poolCopy.length){
+        const c = poolCopy.pop();
+        const key = `${c.leagueId}::${c.teamName}`.toLowerCase();
+        if (used.has(key)) continue;
+        used.add(key);
+        pick = c;
+        break;
+      }
+      if (!pick) throw new Error('No pude asignar equipos sin repetir. Elegí más ligas o sacá el filtro.');
+      return { ...p, teamName: pick.teamName, leagueName: pick.leagueName, teamLeagueId: pick.leagueId };
+    });
   }
 
 
   function buildTeamPool(selectedLeagueIds, leagues){
+    // If only national teams:
+    if (CT.onlyNational){
+      const nat = leagues.find(l => l.id === 'national');
+      if (!nat) throw new Error('No existe la liga de Selecciones (Mundo).');
+      const pool = [];
+      (nat.teams||[]).forEach(t => {
+        const name = String(t);
+        if (CT.onlyCompetitive && !name.trim().startsWith('★')) return;
+        pool.push({ leagueId: nat.id, leagueName: nat.name, teamName: name.replace(/^★\s*/,'') });
+      });
+      if (!pool.length) throw new Error('No hay selecciones disponibles con ese filtro.');
+      return pool;
+    }
+
     const selected = leagues.filter(l => selectedLeagueIds.includes(l.id));
     if (selected.length === 0) throw new Error('Seleccioná al menos 1 liga para el sorteo.');
     const pool = [];
-    selected.forEach(l => l.teams.forEach(t => pool.push({ leagueId: l.id, leagueName: l.name, teamName: t })));
+    selected.forEach(l => (l.teams||[]).forEach(t => {
+      const name = String(t);
+      if (CT.onlyCompetitive && !name.trim().startsWith('★')) return;
+      pool.push({ leagueId: l.id, leagueName: l.name, teamName: name.replace(/^★\s*/,'') });
+    }));
+    if (!pool.length) throw new Error('No hay equipos disponibles con ese filtro.');
     return pool;
   }
 
@@ -524,7 +603,7 @@ lwrap.querySelectorAll('input[data-league]').forEach(chk => {
 
     for (let i=0;i<allMatches.length;i++){
       const m = allMatches[i];
-      const label = `${m.homeName} vs ${m.awayName}`;
+      const label = `${getParticipantName(draft, m.homeId)} vs ${m.awayId ? getParticipantName(draft, m.awayId) : 'BYE'}`;
       elWho.textContent = `Partido ${i+1} de ${allMatches.length}`;
       elReel.textContent = label;
 
@@ -533,7 +612,7 @@ lwrap.querySelectorAll('input[data-league]').forEach(chk => {
       card.innerHTML = `
         <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;">
           <div>
-            <div style="font-weight:900">${escapeHtml(m.homeName)} <span class="muted">vs</span> ${escapeHtml(m.awayName)}</div>
+            <div style="font-weight:900">${escapeHtml(getParticipantName(draft, m.homeId))} <span class="muted">vs</span> ${escapeHtml(m.awayId ? getParticipantName(draft, m.awayId) : 'BYE')}</div>
             <div class="muted">${escapeHtml(m.round || m.group || '')}</div>
           </div>
           <div class="pill">${escapeHtml(m.stage || 'Partido')}</div>
@@ -857,42 +936,8 @@ lwrap.querySelectorAll('input[data-league]').forEach(chk => {
 
 
     // backup export/import
-    $('#btn-export').onclick = () => {
-      const payload = {
-        leagues: getLeagues(),
-        tournaments: getTournaments(),
-        stats: getStats(),
-        exportedAt: new Date().toISOString()
-      };
-      const blob = new Blob([JSON.stringify(payload, null, 2)], { type:'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `torneos_backup_${new Date().toISOString().slice(0,10)}.json`;
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 500);
-    };
 
-    $('#btn-import').onclick = () => $('#importFile').click();
-    $('#importFile').onchange = async (e) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      try {
-        const txt = await file.text();
-        const data = JSON.parse(txt);
-        if (data.leagues) setLeagues(data.leagues);
-        if (data.tournaments) setTournaments(data.tournaments);
-        if (data.stats) setStats(data.stats);
-        alert('Importación OK.');
-        renderTournaments();
-      } catch (err) {
-        alert('No pude importar ese JSON.');
-      } finally {
-        e.target.value = '';
-      }
-    };
-
-    $('#btn-reset-all').onclick = () => {
+    $('#btn-reset-all').onclick$('#btn-reset-all').onclick = () => {
       if (!confirm('Esto borra TODOS los torneos y el ranking guardado en este navegador. ¿Seguro?')) return;
       localStorage.removeItem(LS_TOURNAMENTS);
       localStorage.removeItem(LS_STATS);
@@ -1084,8 +1129,10 @@ lwrap.querySelectorAll('input[data-league]').forEach(chk => {
 
   function renderMatchBlock(title, matches, t, opts={}){
     const rows = matches.map(m => {
-      const home = getParticipantName(t, m.homeId);
-      const away = m.awayId ? getParticipantName(t, m.awayId) : 'BYE';
+      const homeP = t.participants.find(p => p.id === m.homeId);
+      const home = homeP ? `${homeP.name} (${homeP.teamName||''})`.replace(/\s+\(\)/,'') : getParticipantName(t, m.homeId);
+      const awayP = m.awayId ? t.participants.find(p => p.id === m.awayId) : null;
+      const away = m.awayId ? (awayP ? `${awayP.name} (${awayP.teamName||''})`.replace(/\s+\(\)/,'') : getParticipantName(t, m.awayId)) : 'BYE';
       const hg = m.homeGoals ?? '';
       const ag = m.awayGoals ?? '';
       const disabled = (t.status === 'completed') ? 'disabled' : '';
@@ -1517,8 +1564,10 @@ lwrap.querySelectorAll('input[data-league]').forEach(chk => {
 
     const matches = (t.matches||[]).filter(m => m.homeId === pid || m.awayId === pid);
     const items = matches.map(m => {
-      const home = getParticipantName(t, m.homeId);
-      const away = m.awayId ? getParticipantName(t, m.awayId) : 'BYE';
+      const homeP = t.participants.find(p => p.id === m.homeId);
+      const home = homeP ? `${homeP.name} (${homeP.teamName||''})`.replace(/\s+\(\)/,'') : getParticipantName(t, m.homeId);
+      const awayP = m.awayId ? t.participants.find(p => p.id === m.awayId) : null;
+      const away = m.awayId ? (awayP ? `${awayP.name} (${awayP.teamName||''})`.replace(/\s+\(\)/,'') : getParticipantName(t, m.awayId)) : 'BYE';
       const s = (m.homeGoals===null || m.awayGoals===null) ? '—' : `${m.homeGoals}-${m.awayGoals}`;
       const st = m.stage === 'league' ? `Liga (Fecha ${m.round})` : (m.stage==='group' ? `Grupo ${m.group} (Fecha ${m.round})` : `${m.roundName}`);
       return `<li><span class="muted">${escapeHtml(st)}:</span> ${escapeHtml(home)} vs ${escapeHtml(away)} <span class="muted">(${s})</span></li>`;
@@ -1717,6 +1766,11 @@ lwrap.querySelectorAll('input[data-league]').forEach(chk => {
       btn.onclick = () => {
         selectedLeagueId = btn.dataset.openLeague;
         renderLeagueTeams();
+        // on mobile, bring the editor into view so it's obvious it opened
+        setTimeout(() => {
+          const target = $('#league-teams') || $('#teams-area');
+          if (target && target.scrollIntoView) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 50);
       };
     });
 
@@ -1727,7 +1781,33 @@ lwrap.querySelectorAll('input[data-league]').forEach(chk => {
       renderTeams();
     };
 
-    renderLeagueTeams();
+    
+    // create custom league
+    const addBtn = $('#league-add-btn');
+    if (addBtn){
+      addBtn.onclick = () => {
+        const name = ($('#league-add-name')?.value || '').trim();
+        if (!name) return;
+        const leagues2 = getLeagues();
+        const exists = leagues2.some(l => l.name.toLowerCase() === name.toLowerCase());
+        if (exists) { alert('Ya existe una liga con ese nombre.'); return; }
+        const id = 'CUST_' + uid().slice(0,8).toUpperCase();
+        leagues2.push({ id, name, region: 'Personalizada', teams: [] });
+        setLeagues(leagues2);
+        selectedLeagueId = id;
+        $('#league-add-name').value = '';
+        renderTeams();
+        setTimeout(() => {
+          const target = $('#league-teams') || $('#teams-area');
+          if (target && target.scrollIntoView) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 50);
+      };
+      $('#league-add-name')?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter'){ e.preventDefault(); addBtn.click(); }
+      });
+    }
+
+renderLeagueTeams();
   }
 
   function renderLeagueTeams(){
@@ -1744,16 +1824,30 @@ lwrap.querySelectorAll('input[data-league]').forEach(chk => {
 
     title.textContent = league.name;
 
-    const items = league.teams.map((t,i) => `
-      <div class="list-item">
-        <div class="pill">${escapeHtml(t)}</div>
+    const items = league.teams.map((t,i) => {
+      const raw = String(t||'');
+      const isComp = raw.trim().startsWith('★');
+      const name = raw.replace(/^★\s*/, '').trim();
+
+      return `
+      <div class="list-item team-row">
+        <input type="checkbox" data-comp-team="${i}" ${isComp ? 'checked' : ''} title="Competitivo"/>
+        <div class="team-name">
+          <span class="pill">${escapeHtml(name)}</span>
+        </div>
+        <span class="badge ${isComp ? 'good' : 'norm'}">${isComp ? 'Competitivo' : 'Normal'}</span>
         <button class="danger" data-del-team="${i}">Quitar</button>
       </div>
-    `).join('');
+    `;
+    }).join('');
 
     wrap.innerHTML = `
-      <div class="row gap">
+      <div class="team-add-row">
         <input id="team-add" type="text" placeholder="Agregar equipo…" />
+        <label title="Marcar como competitivo">
+          <input id="team-add-comp" type="checkbox" />
+          <span>Competitivo</span>
+        </label>
         <button id="team-add-btn" class="secondary">Agregar</button>
       </div>
       <div class="mt list">${items || '<div class="muted">Sin equipos.</div>'}</div>
@@ -1770,7 +1864,9 @@ lwrap.querySelectorAll('input[data-league]').forEach(chk => {
         alert('Ese equipo ya existe en la liga.');
         return;
       }
-      l2.teams.push(v);
+      const comp = $('#team-add-comp')?.checked;
+      l2.teams.push(comp ? (`★ ${v}`) : v);
+      if ($('#team-add-comp')) $('#team-add-comp').checked = false;
       setLeagues(leagues2);
       renderLeagueTeams();
     };
@@ -1778,7 +1874,22 @@ lwrap.querySelectorAll('input[data-league]').forEach(chk => {
       if (e.key === 'Enter') { e.preventDefault(); $('#team-add-btn').click(); }
     };
 
-    $$('#league-teams button[data-del-team]').forEach(btn => {
+    
+    $$('#league-teams input[data-comp-team]').forEach(chk => {
+      chk.onchange = () => {
+        const idx = Number(chk.dataset.compTeam);
+        const leagues2 = getLeagues();
+        const l2 = leagues2.find(x => x.id === selectedLeagueId);
+        if (!l2) return;
+        const raw = String(l2.teams[idx] || '');
+        const name = raw.replace(/^★\s*/, '').trim();
+        l2.teams[idx] = chk.checked ? (`★ ${name}`) : name;
+        setLeagues(leagues2);
+        renderLeagueTeams();
+      };
+    });
+
+$$('#league-teams button[data-del-team]').forEach(btn => {
       btn.onclick = () => {
         const idx = Number(btn.dataset.delTeam);
         const leagues2 = getLeagues();
