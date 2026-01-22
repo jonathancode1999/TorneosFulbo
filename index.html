@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Torneos - Liga/Copa</title>
+<link href="assets/styles.css" rel="stylesheet"/>
+</head>
+<body>
+<header class="topbar">
+<div class="brand">
+<div class="logo">⚽</div>
+<div>
+<div class="title">Torneos</div>
+<div class="subtitle">Liga / Copa (con historial)</div>
+</div>
+</div>
+<nav class="nav">
+<button class="navbtn" data-route="home">Inicio</button>
+<button class="navbtn" data-route="create">Crear torneo</button>
+<button class="navbtn" data-route="tournaments">Torneos / Historial</button>
+<button class="navbtn" data-route="teams">Equipos y ligas</button>
+</nav>
+</header>
+<main class="container">
+<!-- HOME -->
+<section class="view" id="view-home">
+<div class="grid-2">
+<div class="card">
+<h2>Crear un nuevo torneo</h2>
+<p>Elegí formato (Liga / Copa con grupos / Copa sin grupos), cargá participantes, seleccioná ligas y sorteá equipos sin repetir.</p>
+<button class="primary" id="goCreate">Crear torneo</button>
+</div>
+<div class="card">
+<h2>Torneos / Historial</h2>
+<p>Administrá resultados partido a partido, mirá tablas y llaves, finalizá torneos y consultá el ranking de campeones.</p>
+<button class="primary" id="goTournaments">Ver torneos</button>
+</div>
+</div>
+<div class="card">
+<h2>Tips rápidos</h2>
+<ul>
+<li>Los datos se guardan en tu navegador (localStorage). Si abrís en otra PC/navegador, no se comparte.</li>
+<li>La lista de equipos viene precargada y la podés editar en <b>Equipos y ligas</b>.</li>
+<li>En Copa: si un partido termina empatado, elegís ganador (penales) para avanzar.</li>
+</ul>
+</div>
+</section>
+<!-- CREATE -->
+<section class="view hidden" id="view-create">
+<div class="card">
+<h2>Crear torneo</h2>
+<div class="form-row">
+<label>Nombre del torneo</label>
+<input id="ct-name" placeholder="Ej: Copa del Asado" type="text"/>
+</div>
+<div class="form-row">
+<label>Tipo</label>
+<select id="ct-type">
+<option value="league">Liga</option>
+<option value="cup_groups">Copa con fase de grupos</option>
+<option value="cup">Copa sin fase de grupos</option>
+</select>
+</div><div class="form-row" id="ct-groups-advance-row">
+<label>Pasan a la siguiente fase (por grupo)</label>
+<select id="ct-groups-advance">
+<option value="1">1</option>
+<option selected="" value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+</select>
+<div class="muted">Solo aplica a “Copa con fase de grupos”.</div>
+</div>
+<div class="grid-2">
+<div class="card soft">
+<h3>Participantes</h3>
+<div class="form-row">
+<label>Agregar participante</label>
+<div class="row">
+<input id="ct-participant" placeholder="Nombre" type="text"/>
+<button class="secondary" id="ct-add">Agregar</button>
+</div>
+</div>
+<div class="list" id="ct-participants"></div>
+<div class="muted">Tip: mínimo 2. Para copa ideal: 4, 8, 16… (igual soporta byes).</div>
+</div>
+<div class="card soft">
+<h3>Ligas habilitadas para el sorteo</h3><div class="form-row">
+<label class="row" style="align-items:center;gap:10px;justify-content:flex-start">
+<input id="ct-leagues-toggleall" type="checkbox"/>
+<span>Marcar / desmarcar todas</span>
+</label>
+</div>
+<div class="leagues" id="ct-leagues"></div>
+<div class="muted">Marcá una o varias ligas. El sorteo asigna equipos sin repetir.</div>
+</div>
+</div>
+<div class="row gap">
+<button class="primary" id="ct-draw">Sortear equipos</button>
+<button class="primary" disabled="" id="ct-generate">Generar fixture</button>
+<button class="success" disabled="" id="ct-save">Guardar torneo</button><button class="success" disabled="" id="ct-start">Arrancar torneo</button>
+<button class="ghost" id="ct-reset">Limpiar</button>
+</div>
+<div class="card soft hidden" id="ct-output"></div>
+</div>
+</section>
+<!-- TOURNAMENTS -->
+<section class="view hidden" id="view-tournaments">
+<div class="row between">
+<h2 style="margin:0">Torneos / Historial</h2>
+<div class="row gap">
+<button class="secondary" id="btn-export">Exportar backup (JSON)</button>
+<button class="secondary" id="btn-import">Importar backup</button>
+<input accept="application/json" class="hidden" id="importFile" type="file"/>
+<button class="danger" id="btn-reset-all">Borrar todo</button>
+</div>
+</div>
+<div class="tabs">
+<button class="tabbtn active" data-tab="tab-tlist">Torneos</button>
+<button class="tabbtn" data-tab="tab-ranking">Ranking</button>
+</div>
+<div class="tab" id="tab-tlist">
+<div class="table-wrap" id="t-list"></div>
+<div class="card hidden" id="t-details"></div>
+</div>
+<div class="tab hidden" id="tab-ranking">
+<div class="card" id="rank"></div>
+<div class="card hidden" id="person-details"></div>
+</div>
+</section>
+<!-- TEAMS -->
+<section class="view hidden" id="view-teams">
+<div class="row between">
+<h2 style="margin:0">Equipos y ligas</h2>
+<button class="danger" id="teams-reset">Restaurar listado precargado</button>
+</div>
+<div class="grid-2">
+<div class="card soft">
+<h3>Ligas</h3>
+<div class="list" id="league-list"></div>
+</div>
+<div class="card soft">
+<h3 id="league-title">Seleccioná una liga</h3>
+<div id="league-teams"></div>
+</div>
+</div>
+</section>
+</main>
+<footer class="footer">
+    Hecho para cargar resultados partido a partido. Guardado local (navegador).
+  </footer>
+<script src="data/teams.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
